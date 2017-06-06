@@ -12,9 +12,26 @@ view: users {
     sql: ${TABLE}.age ;;
   }
 
+  dimension: age_tier {
+    type: tier
+    tiers: [18, 25, 35, 45, 55, 65, 75]
+    sql: ${age} ;;
+    style: integer
+  }
+
+  dimension: is_under_18 {
+    type: yesno
+    sql: ${age} < 18;;
+  }
+
   dimension: city {
     type: string
     sql: ${TABLE}.city ;;
+  }
+
+  dimension: city_state {
+    type: string
+    sql: ${city} || ', ' || ${state} ;;
   }
 
   dimension: country {
@@ -36,6 +53,17 @@ view: users {
     sql: ${TABLE}.created_at ;;
   }
 
+  dimension: days_since_signup {
+    type: number
+    sql: datediff('day', ${created_date}, GETDATE()) ;;
+    value_format: "###########"
+  }
+
+  dimension: is_new_user {
+    type: yesno
+    sql: ${days_since_signup} <= 90 ;;
+  }
+
   dimension: email {
     type: string
     sql: ${TABLE}.email ;;
@@ -44,6 +72,11 @@ view: users {
   dimension: first_name {
     type: string
     sql: ${TABLE}.first_name ;;
+  }
+
+  dimension: full_name {
+    type: string
+    sql: ${first_name} || ' ' || ${last_name} ;;
   }
 
   dimension: gender {
